@@ -12,6 +12,7 @@ YYYY <prenom.nom@univ-grenoble-alpes.fr>
 # IMPORTS ######################################################################
 
 from pathlib import Path  # gestion fichiers
+import turtle  # module graphique
 
 
 # CONSTANTES ###################################################################
@@ -193,11 +194,59 @@ def afficher_jeu_avec_bonus(jeu, bonus):
         print("\n   +" + "---+"*15)
 
 
+def dessiner_graphique(x, y, taille, couleur):
+    """"Dessine une case du scrabble avec le module graphique turtle."""
+    turtle.up()
+    turtle.goto(x, y)
+    turtle.down()
+    turtle.color("black", couleur)
+    turtle.begin_fill()
+    for _ in range(4):
+        turtle.forward(taille)
+        turtle.right(90)
+    turtle.end_fill()
+
+
+def afficher_plateau_graphique(jetons, bonus):
+    """Affiche le plateau de jeu avec les bonus en utilisant turtle."""
+    turtle.speed(0)
+    taille_case = 30  # taille d'une case en pixels
+    offset_x = -TAILLE_PLATEAU * taille_case / 2
+    offset_y = TAILLE_PLATEAU * taille_case / 2
+
+    for i in range(TAILLE_PLATEAU):
+        for j in range(TAILLE_PLATEAU):
+            x = offset_x + j * taille_case
+            y = offset_y - i * taille_case
+            if bonus[i][j] == 'MD':
+                couleur = 'orange'
+            elif bonus[i][j] == 'MT':
+                couleur = 'red'
+            elif bonus[i][j] == 'LD':
+                couleur = 'lightblue'
+            elif bonus[i][j] == 'LT':
+                couleur = 'blue'
+            else:
+                couleur = 'lightgreen'
+            dessiner_graphique(x, y, taille_case, couleur)
+            if jetons[i][j] != '':
+                turtle.up()
+                turtle.goto(x + taille_case / 2, y - taille_case / 2 - 5)
+                turtle.color("black")
+                turtle.write(jetons[i][j], align="center", font=("Arial", 12, "normal"))
+
+    turtle.hideturtle()
+    turtle.done()
+
+
 def main():
     jetons = init_jetons()
     bonus = init_bonus()
-
-    afficher_jeu_avec_bonus(jetons, bonus)
+    type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
+    if type_de_graphique.lower() == 'oui':
+        afficher_plateau_graphique(jetons, bonus)
+    else:
+        afficher_jeu_avec_bonus(jetons, bonus)
 
 if __name__ == "__main__":
     main()
