@@ -173,7 +173,7 @@ def afficher_jeu_avec_bonus(jeu, bonus):
 
     print("    ", end="")
     for c in range(15):
-        print(f"{c+1:02d} ", end="")
+        print(f"{c+1:02d}  ", end="")  # pour afficher les numéros de colonnes 
     print()
 
     print("   +" + "---+"*15)
@@ -189,7 +189,7 @@ def afficher_jeu_avec_bonus(jeu, bonus):
                 case = f"{symb} "
             else:
                 case = f"{lettre}{symb}"
-            print(f"{case:2s}|", end="")
+            print(f"{case:3s}|", end="")
         print("\n   +" + "---+"*15)
 
 
