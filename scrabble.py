@@ -4,7 +4,7 @@
 -----------------------------------------------------------------------------
 i11_shammah.kelvin@etu-univ-grenoble-alpes.fr_YYYY_projet.py : CR projet « srabble », groupe ZZZ
 
-XXXX <prenom.nom@etu-univ-grenoble-alpes.fr>
+XXXX <kelvin_shammah@etu-univ-grenoble-alpes.fr>
 YYYY <prenom.nom@univ-grenoble-alpes.fr>
 -----------------------------------------------------------------------------
 """
@@ -13,6 +13,7 @@ YYYY <prenom.nom@univ-grenoble-alpes.fr>
 
 from pathlib import Path  # gestion fichiers
 import turtle  # module graphique
+import random
 
 
 # CONSTANTES ###################################################################
@@ -41,7 +42,7 @@ def symetrise_liste(lst) :
     copie_lst = list(lst)
     for i in range(2, len(copie_lst)+1) : lst.append(copie_lst[-i])
 
-
+# ############### Initialisations et affichage ################
 def init_bonus() :
     """
     Q1) Initialise le plateau des bonus.
@@ -126,7 +127,8 @@ def afficher_jetons(j):
     # Affichage des numéros de colonnes
     print("    ", end="")
     for c in range(TAILLE_PLATEAU):
-        print(f"{c + 1:02d} ", end="")
+        # pour aligner les numeros de colonnes
+        print(f" {c + 1:02d} ", end="")
     print()  # <-- correct
     
     # Ligne supérieure
@@ -169,7 +171,7 @@ def symbol_bonus(bonus):
     else:
         return ''  # pas de bonus
     
-def afficher_jeu_avec_bonus(jeu, bonus):
+def afficher_jeu_textuelle(jeu, bonus):
     """Affiche le plateau de jeu avec les bonus."""
 
     print("    ", end="")
@@ -201,6 +203,7 @@ def dessiner_graphique(x, y, taille, couleur):
     turtle.down()
     turtle.color("black", couleur)
     turtle.begin_fill()
+    turtle.title("Plateau de Scrabble")
     for _ in range(4):
         turtle.forward(taille)
         turtle.right(90)
@@ -227,7 +230,7 @@ def afficher_plateau_graphique(jetons, bonus):
             elif bonus[i][j] == 'LT':
                 couleur = 'blue'
             else:
-                couleur = 'lightgreen'
+                couleur = 'green'
             dessiner_graphique(x, y, taille_case, couleur)
             if jetons[i][j] != '':
                 turtle.up()
@@ -238,17 +241,253 @@ def afficher_plateau_graphique(jetons, bonus):
     turtle.hideturtle()
     turtle.done()
 
+# Partie 2: La Pioche
 
-def main():
-    jetons = init_jetons()
-    bonus = init_bonus()
-    type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
-    if type_de_graphique.lower() == 'oui':
-        afficher_plateau_graphique(jetons, bonus)
-    else:
-        afficher_jeu_avec_bonus(jetons, bonus)
+def init_pioche_alea():
+    """" qui g´en`ere une
+ liste de 100 caract`eres majuscules al´eatoires et 2 jokers. On s’assurera seulement que chaque lettre est pr´esente au
+ moins une fois"""
+    
+    liste_pioche = []
+    lettres = []
+    for i in range(26):
+        lettres.append(chr(65 + i))  # Génère les lettres de A à Z
 
-if __name__ == "__main__":
-    main()
+    for l in lettres:
+        liste_pioche.append(l)
 
-   
+    while len(liste_pioche) < 100:
+        lettre_aleatoire = random.choice(lettres)
+        liste_pioche.append(lettre_aleatoire)
+  
+
+    # Ajout des jokers
+    liste_pioche.append('?')
+    liste_pioche.append('?')
+
+    random.shuffle(liste_pioche)  # Mélange la liste pour plus d'aléatoire
+
+    return liste_pioche
+
+# print(init_pioche_alea())
+
+def piocher(x, sac):
+    resultat = []
+    i = 0
+
+    # On ne pioche pas plus que la taille du sac
+    while i < x and len(sac) > 0:
+        # choix aléatoire
+        jeton = random.choice(sac) 
+        # on ajoute à la main  
+        resultat.append(jeton)   
+         # on enlève du sac    
+        sac.remove(jeton)           
+        i += 1
+
+    return resultat
+
+# sac = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+# x = 5
+# print(f"Pioche de {x} jetons :", piocher(x, sac))
+
+def completer_main(main, sac):
+    while len(main) < 7 and len(sac) > 0:
+        jeton = random.choice(sac)
+        main.append(jeton)
+        sac.remove(jeton)
+
+# main = ['A', 'B', 'C']
+# sac = ['D', 'E', 'F']
+# completer_main(main, sac)
+# print("Main après complétion :", main)
+# print("Sac après complétion :", sac)
+
+
+def echanger(jetons, main, sac):
+
+    # 1. Vérifier que chaque jeton demandé est dans la main
+    i = 0
+    while i < len(jetons):
+        if jetons[i] not in main:
+            return False   # jeton absent -> impossible
+        i += 1
+
+    # 2. Vérifier que le sac contient assez de jetons pour l'échange
+    if len(sac) < len(jetons):
+        return False
+
+    # 3. Retirer les jetons de la main
+    #    (les stocker provisoirement pour les remettre dans le sac)
+    jetons_a_remettre = []
+
+    i = 0
+    while i < len(jetons):
+        main.remove(jetons[i])
+        jetons_a_remettre.append(jetons[i])
+        i += 1
+
+    # 4. Piocher exactement le même nombre de jetons
+    nouveaux = piocher(len(jetons), sac)
+
+    # 5. Remettre les anciens jetons dans le sac
+    i = 0
+    while i < len(jetons_a_remettre):
+        sac.append(jetons_a_remettre[i])
+        i += 1
+
+    # 6. Ajouter les nouveaux dans la main
+    i = 0
+    while i < len(nouveaux):
+        main.append(nouveaux[i])
+        i += 1
+
+    return True
+
+# def echanger(jetons, main, sac):
+#     # On verifie que tous les jetons qu'on va echanger sont bien dans la main
+#     for jeton in jetons:
+#         if jeton not in main:
+#             return False
+    
+#     if len(sac) < len(jetons):
+#         return False 
+    
+# sac = init_pioche_alea()
+# main = ['A','R','T','E','S','I','O']
+
+# print(echanger(['A','T'], main, sac))
+# print(main)
+
+
+# 3 : Construction de mots
+mots_fr = generer_dictfr()
+print("Nombre de mots dans le dictionnaire :", len(mots_fr))
+
+# for i in range(len(mots_fr)):
+#     if mots_fr[i][0] == 'U':
+#         print(mots_fr[i][:100])
+
+
+# Une liste de quelques mots aléatoires
+random_mots = random.sample(mots_fr, 20)
+# print("Quelques mots aléatoires du dictionnaire :", random_mots)
+
+def selection_mot_initaile(motsfr, let):
+    """Renvoie une liste de mots du dictionnaire commençant par la lettre let."""
+    liste_mots = []
+    for mot in mots_fr:
+        if mot[0] == let:
+            liste_mots.append(mot)
+    return liste_mots
+
+taille_mot_commencant_par_Y = len(selection_mot_initaile(mots_fr, 'Y'))
+# print("Nombre de mots commençant par la lettre Y :", taille_mot_commencant_par_Y) Il y en a 32.
+
+def selection_mot_longueur(motsfr, lgr):
+    """Renvoie une liste de mots du dictionnaire de longueur lgr."""
+    liste_mots = []
+    for mot in mots_fr:
+        if len(mot) == lgr:
+            liste_mots.append(mot)
+    return liste_mots
+taille_mot_de_longueur_12 = len(selection_mot_longueur(mots_fr, 19))
+# print("Nombre de mots de longueur 12 :", taille_mot_de_longueur_12)  # Il y en a 39
+
+# def mot_jouble(mot, lst):
+#     meme_mot = ""
+#     for lettre in lst:
+#         if lettre in mot:
+#             meme_mot += lettre
+
+#     if len(meme_mot) == len(mot):
+#         return True
+#     else:
+#         return False
+
+# Modification de la fonction mot_jouble
+def mot_jouable(mot, lettres):
+    # copie pour ne pas modifier la main
+    dispo = lettres.copy()
+    jokers = dispo.count('?')
+
+    for lettre in mot:
+        if lettre in dispo:
+            dispo.remove(lettre)   # on consomme la lettre
+        else:
+            if jokers > 0:         # on utilise un joker
+                jokers -= 1
+            else:
+                return False        # lettre impossible
+
+    return True
+
+
+print(mot_jouable("COURIR",["C","O","R","U","I","Z","X"])) # False
+print(mot_jouable("PIED",["P","A","I","D","E","W","K"])) # True
+
+
+def mots_jouables(motfr, lst):
+    mot_possible = []
+    for mot in motfr:
+        if mot_jouable(mot, lst):
+            mot_possible.append(mot)
+    return mot_possible
+
+# print(mots_jouables(["COURIR","PIED","DEPIT","TAPIR","MARCHER"], ["P","I","D","E","T","A","R"])) #elle retourne ['PIED', 'DEPIT', 'TAPIR']
+
+# def main():
+#     jetons = init_jetons()
+#     bonus = init_bonus()
+#     type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
+#     if type_de_graphique.lower() == 'oui':
+#         afficher_plateau_graphique(jetons, bonus)
+#     else:
+#         afficher_jeu_textuelle(jetons, bonus)
+
+# if __name__ == "__main__":
+#     main()
+
+# def main():
+#     # --- Partie joueurs / sac ---
+#     sac = init_pioche_alea()
+#     print("Sac initial ({} jetons) :".format(len(sac)))
+#     print(sac)
+#     print()
+
+#     # Créer deux joueurs et compléter leur main à 7 lettres
+#     joueur1 = []
+#     joueur2 = []
+#     completer_main(joueur1, sac)
+#     completer_main(joueur2, sac)
+#     print("Main du joueur 1 :", joueur1)
+#     print("Main du joueur 2 :", joueur2)
+#     print("Sac après distribution :", len(sac))
+#     print()
+
+#     # Exemple d'échange de jetons
+#     lettres_a_echanger1 = joueur1[:2]
+#     succes1 = echanger(lettres_a_echanger1, joueur1, sac)
+#     print("Échange joueur 1 :", "réussi" if succes1 else "échoué")
+#     print("Main joueur 1 après échange :", joueur1)
+#     print("Sac après échange :", len(sac))
+#     print()
+
+#     lettres_a_echanger2 = joueur2[:1]
+#     succes2 = echanger(lettres_a_echanger2, joueur2, sac)
+#     print("Échange joueur 2 :", "réussi" if succes2 else "échoué")
+#     print("Main joueur 2 après échange :", joueur2)
+#     print("Sac après échange :", len(sac))
+#     print()
+
+#     # --- Partie plateau ---
+#     jetons = init_jetons()
+#     bonus = init_bonus()
+#     type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
+#     if type_de_graphique.lower() == 'oui':
+#         afficher_plateau_graphique(jetons, bonus)
+#     else:
+#         afficher_jeu_textuelle(jetons, bonus)
+
+# if __name__ == "__main__":
+#     main()
