@@ -362,7 +362,7 @@ def echanger(jetons, main, sac):
 
 # 3 : Construction de mots
 mots_fr = generer_dictfr()
-print("Nombre de mots dans le dictionnaire :", len(mots_fr))
+# print("Nombre de mots dans le dictionnaire :", len(mots_fr))
 
 # for i in range(len(mots_fr)):
 #     if mots_fr[i][0] == 'U':
@@ -423,8 +423,8 @@ def mot_jouable(mot, lettres):
     return True
 
 
-print(mot_jouable("COURIR",["C","O","R","U","I","Z","X"])) # False
-print(mot_jouable("PIED",["P","A","I","D","E","W","K"])) # True
+# print(mot_jouable("COURIR",["C","O","R","U","I","Z","X"])) # False
+# print(mot_jouable("PIED",["P","A","I","D","E","W","K"])) # True
 
 
 def mots_jouables(motfr, lst):
@@ -433,8 +433,98 @@ def mots_jouables(motfr, lst):
         if mot_jouable(mot, lst):
             mot_possible.append(mot)
     return mot_possible
-
 # print(mots_jouables(["COURIR","PIED","DEPIT","TAPIR","MARCHER"], ["P","I","D","E","T","A","R"])) #elle retourne ['PIED', 'DEPIT', 'TAPIR']
+
+###################### Valuer d'un mot ##############################
+
+
+print(generer_dico())
+
+dict_jetons = generer_dico()
+# print(dict_jetons["K"]["occ"])
+# print(dict_jetons["Z"]["val"])
+
+def init_pioche(dico):
+    """Cette fonction utilise le dico pour initialiser la pioche, contenant exactement le bon nombre de jetons de chaque lettre, et les 2 jockers"""
+    pioche_liste = []
+    for lettre, subdict in dico.items():
+        occ = subdict['occ']
+        i = 0
+        while i < occ:
+            pioche_liste.append(lettre)
+            i += 1
+
+    pioche_liste.append('?')
+    pioche_liste.append('?')
+
+    return pioche_liste
+
+
+# print(init_pioche(dict_jetons))
+
+def valeur_mot(mot, dico):
+    """Cette fonction renvoie la valeur de ce mot en points."""
+    total = 0
+    for lettre in mot:
+        total += dico[lettre]['val']
+    return total
+
+# print(valeur_mot("TAPIR", generer_dico()))  # Elle retourne 8
+# print(valeur_mot("PIED", generer_dico()))
+def meilleur_mot(motsfr, ll, dico):
+    """Cette fonction renvoie le meilleur mot parmi les mots autoris´es de la liste motsfr"""
+    meilleur_mot = ""
+    meilleure_valeur = 0
+
+    for mot in motsfr:
+        if mot_jouable(mot, ll):
+            valeur_mot_actuelle = valeur_mot(mot, dico)
+            if valeur_mot_actuelle > meilleure_valeur:
+                meilleure_valeur = valeur_mot_actuelle
+                meilleur_mot = mot
+
+    return meilleur_mot
+
+# print(meilleur_mot(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne 'DEPIT'
+
+
+def meilleurs_mots(motsfr, ll, dico):
+    """Cette fonction renvoie une liste de tous les meilleurs mots parmi les mots autoris´es de la liste motsfr"""
+    meilleurs_mots = []
+    meilleure_valeur = 0
+
+    for mot in motsfr:
+        if mot_jouable(mot, ll):
+            valeur_mot_actuelle = valeur_mot(mot, dico)
+            if valeur_mot_actuelle > meilleure_valeur:
+                meilleure_valeur = valeur_mot_actuelle
+                meilleurs_mots = [mot]  # Nouveau meilleur mot trouvé
+            elif valeur_mot_actuelle == meilleure_valeur:
+                meilleurs_mots.append(mot)  # Même valeur que le meilleur actuel
+
+    return meilleurs_mots
+
+
+# print(meilleurs_mots(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne ['DEPIT', 'TAPIR']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # def main():
 #     jetons = init_jetons()
@@ -450,7 +540,8 @@ def mots_jouables(motfr, lst):
 
 # def main():
 #     # --- Partie joueurs / sac ---
-#     sac = init_pioche_alea()
+#     sac = init_pioche(dict_jetons)
+    #   sac = init_pioche(dict_jetons)
 #     print("Sac initial ({} jetons) :".format(len(sac)))
 #     print(sac)
 #     print()

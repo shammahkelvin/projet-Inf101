@@ -1,0 +1,27 @@
+La lettre A	Valeur : 1 point	Nombre : 9 pièces
+La lettre B	Valeur : 3 points	Nombre : 2 pièces
+La lettre C	Valeur : 3 points	Nombre : 2 pièces
+La lettre D	Valeur : 2 points	Nombre : 3 pièces
+La lettre E	Valeur : 1 point	Nombre : 15 pièces
+La lettre F	Valeur : 4 points	Nombre : 2 pièces
+La lettre G	Valeur : 2 points	Nombre : 2 pièces
+La lettre H	Valeur : 4 points	Nombre : 2 pièces
+La lettre I	Valeur : 1 point	Nombre : 8 pièces
+La lettre J	Valeur : 8 points	Nombre : 1 pièce
+La lettre K	Valeur : 10 points	Nombre : 1 pièce
+La lettre L	Valeur : 1 point	Nombre : 5 pièces
+La lettre M	Valeur : 2 points	Nombre : 3 pièces
+La lettre N	Valeur : 1 point	Nombre : 6 pièces
+La lettre O	Valeur : 1 point	Nombre : 6 pièces
+La lettre P	Valeur : 3 points	Nombre : 2 pièces
+La lettre Q	Valeur : 8 points	Nombre : 1 pièce
+La lettre R	Valeur : 1 point	Nombre : 6 pièces
+La lettre S	Valeur : 1 point	Nombre : 6 pièces
+La lettre T	Valeur : 1 point	Nombre : 6 pièces
+La lettre U	Valeur : 1 point	Nombre : 6 pièces
+La lettre V	Valeur : 4 points	Nombre : 2 pièces
+La lettre W	Valeur : 10 points	Nombre : 1 pièce
+La lettre X	Valeur : 10 points	Nombre : 1 pièce
+La lettre Y	Valeur : 10 points	Nombre : 1 pièce
+La lettre Z	Valeur : 10 points	Nombre : 1 pièce
+Jokers	    Valeur : 0 point	Nombre : 2 pièces
