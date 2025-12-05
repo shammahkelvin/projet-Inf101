@@ -635,7 +635,48 @@ def placer_mot(plateau, lm, mot, i, j, dir):
 # print(main)   
 # afficher_jetons(plateau)
 
+def valeur_mot_dans_plateau(mot, plateau_bonus_mots, dico, i, j, dir):
+    valeur_total_letter = 0
+    valeur_mot = 1
 
+    ind = 0
+    while ind < len(mot):
+        # on va d'abord determiner la position de la letter
+        if dir == "H":
+            ligne = i
+            colonne = j + ind
+        else:
+            ligne = i + ind
+            colonne = j
+        
+        bonus = plateau_bonus_mots[ligne][colonne]
+        letter = mot[ind]
+        valeur_letter = dico[letter]['val']
+
+        # on calcule le bonus de la lettre
+        if bonus == 'LD':
+            valeur_letter *= 2
+        elif bonus == 'LT':
+            valeur_letter *= 3
+        # bonus du mot
+        elif bonus == 'MD':
+            valeur_mot *= 2
+        elif bonus == 'MT':
+            valeur_mot *= 3
+
+        valeur_total_letter += valeur_letter
+
+        # on oublie pas de supprimer le bonus une fois utilisé
+        plateau_bonus_mots[ligne][colonne] = ''
+
+        ind += 1
+    return valeur_total_letter * valeur_mot
+
+# plateau_bonus = init_bonus()
+# dico = generer_dico()
+# # placer "CHAT" à partir de (7,7) horizontal
+# score = valeur_mot_dans_plateau("CHAT", plateau_bonus, dico, 7, 7, "H")
+# print("Score =", score) # retourne normalement 18
 
 
 
