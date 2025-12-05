@@ -438,7 +438,7 @@ def mots_jouables(motfr, lst):
 ###################### Valuer d'un mot ##############################
 
 
-print(generer_dico())
+# print(generer_dico())
 
 dict_jetons = generer_dico()
 # print(dict_jetons["K"]["occ"])
@@ -504,16 +504,136 @@ def meilleurs_mots(motsfr, ll, dico):
 
     return meilleurs_mots
 
-
+ 
 # print(meilleurs_mots(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne ['DEPIT', 'TAPIR']
 
 
+######################## 6: Placement sur de mot ##########################
+
+plateau = init_jetons()
+# plateau[7][7] = 'R'
+# print(plateau)
+
+def lire_coords():
+    ligne = int(input("Numéro de ligne (1-15) ? ")) 
+    colonne = int(input("Numéro de colonne (1-15) ? "))
+    while (ligne < 1 or ligne > 15 or colonne < 1 or colonne > 15 or plateau[ligne - 1][colonne - 1] != ''):
+        print("Coordonnées invalides ou case occupée. Veuillez réessayer.")
+        ligne = int(input("Numéro de ligne (1-15) ? ")) 
+        colonne = int(input("Numéro de colonne (1-15) ? "))
+    return (ligne - 1, colonne - 1) 
+    
+# print(lire_coords())
+def tester_placement(plateau, i, j, dir, mot):
+    mots_a_poser = []
+    taille = len(mot)
+
+    # On verifie si le mot est trop grand pour le plateau dans la direction donnée
+    if dir == "V":
+        if i + taille > 15:
+            return []
+    else:
+        if j + taille > 15:
+            return []
+        
+    ind = 0
+    for l in mot:
+        if dir == "V":
+            case = plateau[i + ind][j]
+        else:
+            case = plateau[i][j + ind]
+
+    # Si la case est vide, la lettre peut être placée
+        if case == '':
+            mots_a_poser.append(l)
+        else:
+            if case != l:
+                return []  # Conflit de lettres
+        ind += 1
+    return mots_a_poser
+
+# essai
+# plateau[7][7] = "R"
+
+# res = tester_placement(plateau, 7, 7, "H", "RIRE") #retourne ['I', 'R', 'E']
+# res = tester_placement(plateau, 7, 7, "H", "MIRE") #retourne []
+
+# if res == []:
+#     print("Placement impossible")
+# else:
+#     print("Lettres à poser :", res)
 
 
+def placer_mot(plateau, lm, mot, i, j, dir):
+    """
+    Cette fonction place le mot sur le plateau si possible.
+    lm : liste des lettres du joueur dans la main
+    mot : mot à placer
+    i, j : coordonnées de départ (ligne, colonne)
+    dir : direction ('H' pour horizontal, 'V' pour vertical)
+    Renvoie True si le mot a été placé, False sinon.
 
+    les etapes :
+    1. demander les lettres nécessaires : tester_placement(...)
+    2. si la liste est vide → renvoyer False
+    3. vérifier que chaque lettre nécessaire est dans la main
+    4. si une lettre manque → renvoyer False
+    5. maintenant placer chaque lettre sur le plateau
+    6. retirer les lettres utilisées de la main
+    7. renvoyer True
+    """
+    les_lettres_a_poser = tester_placement(plateau, i, j, dir, mot)
 
+    if les_lettres_a_poser == []:
+        return False  
+    
+    copie_lm = lm.copy()
+    for lettre_poser in les_lettres_a_poser:
+        lettre_trouver = False
+        nouvelle_copie_lm = []
 
+        for lettre_main in copie_lm:
+            if not lettre_trouver and lettre_poser == lettre_main:
+                lettre_trouver = True  
+            else:
+                nouvelle_copie_lm.append(lettre_main)
 
+        if not lettre_trouver:
+            return False  
+        copie_lm = nouvelle_copie_lm
+
+    # Maintenant comme tout est verifié, on peut placer le mot sur le plateau
+    ind = 0
+    for lettre in mot:
+        if dir == "H":
+            if plateau[i][j + ind] == "": # d'abord on verifie que la case est vide
+                plateau[i][j + ind] = lettre # on place la lettre
+        else:
+            if plateau[i + ind][j] == "":
+                plateau[i + ind][j] = lettre
+        ind += 1
+    # # Maintenant comme tout est verifié, on retire les lettres utilisées de la main 
+    for lettre in les_lettres_a_poser:
+        retire = False
+        nouvelle_main = []
+        for lettre_dans_main in lm:
+            if not retire and lettre == lettre_dans_main:
+                retire = True  # on retire la lettre utilisée
+            else:
+                nouvelle_main.append(lettre_dans_main)
+        lm[:] = nouvelle_main  # on met à jour la main  
+
+    return True
+
+# plateau = init_jetons()
+# main = ["I", "R", "E", "A", "T", "S"]
+
+# plateau[7][7] = "R"  # lettre déjà posée
+
+# ok = placer_mot(plateau, main, "RIRE", 7, 7, "H")
+# print(ok)
+# print(main)   
+# afficher_jetons(plateau)
 
 
 
