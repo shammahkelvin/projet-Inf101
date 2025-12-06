@@ -435,7 +435,7 @@ def mots_jouables(motfr, lst):
     return mot_possible
 # print(mots_jouables(["COURIR","PIED","DEPIT","TAPIR","MARCHER"], ["P","I","D","E","T","A","R"])) #elle retourne ['PIED', 'DEPIT', 'TAPIR']
 
-###################### Valuer d'un mot ##############################
+###################### 4 :Valeur d'un mot ##############################
 
 
 # print(generer_dico())
@@ -508,9 +508,154 @@ def meilleurs_mots(motsfr, ll, dico):
 # print(meilleurs_mots(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne ['DEPIT', 'TAPIR']
 
 
+####################### 5: Partie 5 ####################################
+
+def tour_joueur(joueur, plateau, sac, dico, mots_fr):
+    """
+    Gère le tour d'un joueur.
+    """
+
+    print("\n-----------------------------------------------------")
+    print("Tour du joueur :", joueur["nom"])
+    print("Main :", joueur["main"])
+    print("Score :", joueur["score"])
+    print()
+
+    afficher_jetons(plateau)
+
+    print("\nActions possibles :")
+    print("(P) Passer")
+    print("(E) Échanger")
+    print("(M) Proposer un mot")
+    choix = input("Votre choix ? ")
+
+    # passer son tour
+    if choix == "P" or choix == "p":
+        print(joueur["nom"], "passe son tour.")
+        return False
+
+    # echanger des lettres
+    if choix == "E" or choix == "e":
+        lettres = input("Lettres à échanger (sans espaces) : ")
+        lst = [c for c in lettres]
+
+        # Tentative d'échange
+        if echanger(lst, joueur["main"], sac):
+            print("Échange effectué. Nouvelle main :", joueur["main"])
+        else:
+            print("Échange impossible.")
+        return False
+
+    # proposer un mot    
+    if choix == "M" or choix == "m":
+        mot = input("Mot proposé : ")
+
+        # Vérification du mot
+        while mot not in mots_fr or not mot_jouable(mot, joueur["main"]):
+            print("Mot invalide ou impossible à écrire avec ta main.")
+            mot = input("Mot proposé : ")
+
+        # Valeur du mot (fonction déjà codée)
+        points = valeur_mot(mot, dico)
+        print("Valeur du mot :", points)
+
+        # Mise à jour du score
+        joueur["score"] += points
+
+        # Retirer les lettres utilisées
+        for lettre in mot:
+            joueur["main"].remove(lettre)
+
+        # Repiocher les lettres manquantes
+        nb_a_piocher = 7 - len(joueur["main"])
+
+        if len(sac) < nb_a_piocher:
+            print("l ne reste pas assez de jetons pour compléter la main !")
+            print("La partie s'arrête immédiatement.")
+            return True   # fin de partie
+
+        nouveaux = piocher(nb_a_piocher, sac)
+        joueur["main"].extend(nouveaux)
+        print("Nouvelle main :", joueur["main"])
+        return False
+
+    
+    print("Choix invalide.")
+    return False
+
+
+def detecte_prochain_joueur(i, nb):
+    """Renvoie l'indice du prochain joueur."""
+    return (i + 1) % nb
+
+def fin_de_partie_si_insuffisant(sac, nb_a_piocher):
+    """Renvoie True si le sac contient moins que nb_a_piocher jetons."""
+    return len(sac) < nb_a_piocher
+
+
+def programme_principal_partie5():
+    print("=== SCRABBLE — PARTIE 5 ===")
+
+    # Initialisation du jeu
+    dico = generer_dico()
+    mots_fr = generer_dictfr()
+    sac = init_pioche(dico)
+    plateau = init_jetons()
+
+    # Nombre de joueurs
+    nb = int(input("Nombre de joueurs ? "))
+    joueurs = []
+
+    # Création des joueurs
+    for i in range(nb):
+        nom = input(f"Nom du joueur {i+1} : ")
+        main = piocher(7, sac)
+        joueurs.append({
+            "nom": nom,
+            "score": 0,
+            "main": main
+        })
+
+    # Affichage plateau initial
+    afficher_jetons(plateau)
+
+    # Boucle de jeu
+    joueur_actuel = 0
+    fin = False
+
+    while not fin:
+        j = joueurs[joueur_actuel]
+
+        # Tour du joueur
+        fin = tour_joueur(j, plateau, sac, dico, mots_fr)
+
+        # Passer au joueur suivant
+        if not fin:
+            joueur_actuel = detecte_prochain_joueur(joueur_actuel, nb)
+
+    # Fin de partie — calcul des malus
+    print("\n=== FIN DE PARTIE ===")
+
+    for j in joueurs:
+        malus = sum(dico[c]["val"] for c in j["main"])
+        j["score"] -= malus
+        print(f"{j['nom']} perd {malus} points (main restante : {j['main']})")
+
+    # Scores finaux
+    print("\nScores finaux :")
+    for j in joueurs:
+        print(j["nom"], ":", j["score"])
+
+    gagnant = max(joueurs, key=lambda x: x["score"])
+    print("\n🏆 Le gagnant est :", gagnant["nom"])
+
+if __name__ == "__main__":
+    programme_principal_partie5()
+
+
 ######################## 6: Placement sur de mot ##########################
 
-plateau = init_jetons()
+# plateau = init_jetons()
 # plateau[7][7] = 'R'
 # print(plateau)
 
@@ -679,7 +824,7 @@ def valeur_mot_dans_plateau(mot, plateau_bonus_mots, dico, i, j, dir):
 # print("Score =", score) # retourne normalement 18
 
 
-
+######################## Partie 7: Programme principal complet ##########################
 
 
 
