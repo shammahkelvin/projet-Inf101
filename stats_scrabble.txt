@@ -1,0 +1,8 @@
+=== HISTORIQUE DES PARTIES DE SCRABBLE ===
+
+=================== PARTIE 2 ===================
+Joueur      Score     Gagnant   MotLong        Scrabbles 
+pop         -7        NON       RIEN           0         
+pop1        -6        OUI       TIEN           0         
+
+

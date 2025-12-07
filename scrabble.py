@@ -11,9 +11,11 @@ YYYY <prenom.nom@univ-grenoble-alpes.fr>
 
 # IMPORTS ######################################################################
 
+import os
 from pathlib import Path  # gestion fichiers
 import turtle  # module graphique
 import random
+
 
 
 # CONSTANTES ###################################################################
@@ -121,30 +123,6 @@ def init_jetons():
 
 # print(init_jetons())
 
-def afficher_jetons(j):
-    """Affiche la grille des jetons."""
-    
-    # Affichage des numéros de colonnes
-    print("    ", end="")
-    for c in range(TAILLE_PLATEAU):
-        # pour aligner les numeros de colonnes
-        print(f" {c + 1:02d} ", end="")
-    print()  # <-- correct
-    
-    # Ligne supérieure
-    print("   +" + "---+" * TAILLE_PLATEAU)
-    
-    # Affichage des lignes
-    for i in range(TAILLE_PLATEAU):
-        print(f"{i + 1:02d} |", end="")
-        for c in range(TAILLE_PLATEAU):
-            if j[i][c] == "":
-                print("   |", end="")
-            else:
-                print(f" {j[i][c]} |", end="")
-        print()  # fin de ligne
-        print("   +" + "---+" * TAILLE_PLATEAU)
-
 
 # jetons = init_jetons()
 
@@ -171,75 +149,7 @@ def symbol_bonus(bonus):
     else:
         return ''  # pas de bonus
     
-def afficher_jeu_textuelle(jeu, bonus):
-    """Affiche le plateau de jeu avec les bonus."""
 
-    print("    ", end="")
-    for c in range(15):
-        print(f"{c+1:02d}  ", end="")  # pour afficher les numéros de colonnes 
-    print()
-
-    print("   +" + "---+"*15)
-
-    for i in range(15):
-        print(f"{i+1:02d} |", end="")
-        for c in range(15):
-            jetons = init_jetons()
-            lettre = jetons[i][c]
-            symb = symbol_bonus(bonus[i][c])
-            if lettre == "":
-                # case vide → seulement bonus
-                case = f"{symb} "
-            else:
-                case = f"{lettre}{symb}"
-            print(f"{case:3s}|", end="")
-        print("\n   +" + "---+"*15)
-
-
-def dessiner_graphique(x, y, taille, couleur):
-    """"Dessine une case du scrabble avec le module graphique turtle."""
-    turtle.up()
-    turtle.goto(x, y)
-    turtle.down()
-    turtle.color("black", couleur)
-    turtle.begin_fill()
-    turtle.title("Plateau de Scrabble")
-    for _ in range(4):
-        turtle.forward(taille)
-        turtle.right(90)
-    turtle.end_fill()
-
-
-def afficher_plateau_graphique(jetons, bonus):
-    """Affiche le plateau de jeu avec les bonus en utilisant turtle."""
-    turtle.speed(0)
-    taille_case = 30  # taille d'une case en pixels
-    offset_x = -TAILLE_PLATEAU * taille_case / 2
-    offset_y = TAILLE_PLATEAU * taille_case / 2
-
-    for i in range(TAILLE_PLATEAU):
-        for j in range(TAILLE_PLATEAU):
-            x = offset_x + j * taille_case
-            y = offset_y - i * taille_case
-            if bonus[i][j] == 'MD':
-                couleur = 'orange'
-            elif bonus[i][j] == 'MT':
-                couleur = 'red'
-            elif bonus[i][j] == 'LD':
-                couleur = 'lightblue'
-            elif bonus[i][j] == 'LT':
-                couleur = 'blue'
-            else:
-                couleur = 'green'
-            dessiner_graphique(x, y, taille_case, couleur)
-            if jetons[i][j] != '':
-                turtle.up()
-                turtle.goto(x + taille_case / 2, y - taille_case / 2 - 5)
-                turtle.color("black")
-                turtle.write(jetons[i][j], align="center", font=("Arial", 12, "normal"))
-
-    turtle.hideturtle()
-    turtle.done()
 
 # Partie 2: La Pioche
 
@@ -297,12 +207,6 @@ def completer_main(main, sac):
         main.append(jeton)
         sac.remove(jeton)
 
-# main = ['A', 'B', 'C']
-# sac = ['D', 'E', 'F']
-# completer_main(main, sac)
-# print("Main après complétion :", main)
-# print("Sac après complétion :", sac)
-
 
 def echanger(jetons, main, sac):
 
@@ -344,29 +248,8 @@ def echanger(jetons, main, sac):
 
     return True
 
-# def echanger(jetons, main, sac):
-#     # On verifie que tous les jetons qu'on va echanger sont bien dans la main
-#     for jeton in jetons:
-#         if jeton not in main:
-#             return False
-    
-#     if len(sac) < len(jetons):
-#         return False 
-    
-# sac = init_pioche_alea()
-# main = ['A','R','T','E','S','I','O']
-
-# print(echanger(['A','T'], main, sac))
-# print(main)
-
-
 # 3 : Construction de mots
 mots_fr = generer_dictfr()
-# print("Nombre de mots dans le dictionnaire :", len(mots_fr))
-
-# for i in range(len(mots_fr)):
-#     if mots_fr[i][0] == 'U':
-#         print(mots_fr[i][:100])
 
 
 # Une liste de quelques mots aléatoires
@@ -394,16 +277,6 @@ def selection_mot_longueur(motsfr, lgr):
 taille_mot_de_longueur_12 = len(selection_mot_longueur(mots_fr, 19))
 # print("Nombre de mots de longueur 12 :", taille_mot_de_longueur_12)  # Il y en a 39
 
-# def mot_jouble(mot, lst):
-#     meme_mot = ""
-#     for lettre in lst:
-#         if lettre in mot:
-#             meme_mot += lettre
-
-#     if len(meme_mot) == len(mot):
-#         return True
-#     else:
-#         return False
 
 # Modification de la fonction mot_jouble
 def mot_jouable(mot, lettres):
@@ -421,8 +294,6 @@ def mot_jouable(mot, lettres):
                 return False        # lettre impossible
 
     return True
-
-
 # print(mot_jouable("COURIR",["C","O","R","U","I","Z","X"])) # False
 # print(mot_jouable("PIED",["P","A","I","D","E","W","K"])) # True
 
@@ -459,7 +330,6 @@ def init_pioche(dico):
 
     return pioche_liste
 
-
 # print(init_pioche(dict_jetons))
 
 def valeur_mot(mot, dico):
@@ -487,7 +357,6 @@ def meilleur_mot(motsfr, ll, dico):
 
 # print(meilleur_mot(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne 'DEPIT'
 
-
 def meilleurs_mots(motsfr, ll, dico):
     """Cette fonction renvoie une liste de tous les meilleurs mots parmi les mots autoris´es de la liste motsfr"""
     meilleurs_mots = []
@@ -507,155 +376,21 @@ def meilleurs_mots(motsfr, ll, dico):
  
 # print(meilleurs_mots(["TAPIR", "PIED"], ["P","I","D","E","T","A","R"], generer_dico())) # Elle retourne ['DEPIT', 'TAPIR']
 
-
 ####################### 5: Partie 5 ####################################
-
-def tour_joueur(joueur, plateau, sac, dico, mots_fr):
-    """
-    Gère le tour d'un joueur.
-    """
-
-    print("\n-----------------------------------------------------")
-    print("Tour du joueur :", joueur["nom"])
-    print("Main :", joueur["main"])
-    print("Score :", joueur["score"])
-    print()
-
-    afficher_jetons(plateau)
-
-    print("\nActions possibles :")
-    print("(P) Passer")
-    print("(E) Échanger")
-    print("(M) Proposer un mot")
-    choix = input("Votre choix ? ")
-
-    # passer son tour
-    if choix == "P" or choix == "p":
-        print(joueur["nom"], "passe son tour.")
-        return False
-
-    # echanger des lettres
-    if choix == "E" or choix == "e":
-        lettres = input("Lettres à échanger (sans espaces) : ")
-        lst = [c for c in lettres]
-
-        # Tentative d'échange
-        if echanger(lst, joueur["main"], sac):
-            print("Échange effectué. Nouvelle main :", joueur["main"])
-        else:
-            print("Échange impossible.")
-        return False
-
-    # proposer un mot    
-    if choix == "M" or choix == "m":
-        mot = input("Mot proposé : ")
-
-        # Vérification du mot
-        while mot not in mots_fr or not mot_jouable(mot, joueur["main"]):
-            print("Mot invalide ou impossible à écrire avec ta main.")
-            mot = input("Mot proposé : ")
-
-        # Valeur du mot (fonction déjà codée)
-        points = valeur_mot(mot, dico)
-        print("Valeur du mot :", points)
-
-        # Mise à jour du score
-        joueur["score"] += points
-
-        # Retirer les lettres utilisées
-        for lettre in mot:
-            joueur["main"].remove(lettre)
-
-        # Repiocher les lettres manquantes
-        nb_a_piocher = 7 - len(joueur["main"])
-
-        if len(sac) < nb_a_piocher:
-            print("l ne reste pas assez de jetons pour compléter la main !")
-            print("La partie s'arrête immédiatement.")
-            return True   # fin de partie
-
-        nouveaux = piocher(nb_a_piocher, sac)
-        joueur["main"].extend(nouveaux)
-        print("Nouvelle main :", joueur["main"])
-        return False
-
-    
-    print("Choix invalide.")
-    return False
 
 
 def detecte_prochain_joueur(i, nb):
     """Renvoie l'indice du prochain joueur."""
     return (i + 1) % nb
 
-def fin_de_partie_si_insuffisant(sac, nb_a_piocher):
-    """Renvoie True si le sac contient moins que nb_a_piocher jetons."""
-    return len(sac) < nb_a_piocher
-
-
-def programme_principal_partie5():
-    print("=== SCRABBLE — PARTIE 5 ===")
-
-    # Initialisation du jeu
-    dico = generer_dico()
-    mots_fr = generer_dictfr()
-    sac = init_pioche(dico)
-    plateau = init_jetons()
-
-    # Nombre de joueurs
-    nb = int(input("Nombre de joueurs ? "))
-    joueurs = []
-
-    # Création des joueurs
-    for i in range(nb):
-        nom = input(f"Nom du joueur {i+1} : ")
-        main = piocher(7, sac)
-        joueurs.append({
-            "nom": nom,
-            "score": 0,
-            "main": main
-        })
-
-    # Affichage plateau initial
-    afficher_jetons(plateau)
-
-    # Boucle de jeu
-    joueur_actuel = 0
-    fin = False
-
-    while not fin:
-        j = joueurs[joueur_actuel]
-
-        # Tour du joueur
-        fin = tour_joueur(j, plateau, sac, dico, mots_fr)
-
-        # Passer au joueur suivant
-        if not fin:
-            joueur_actuel = detecte_prochain_joueur(joueur_actuel, nb)
-
-    # Fin de partie — calcul des malus
-    print("\n=== FIN DE PARTIE ===")
-
-    for j in joueurs:
-        malus = sum(dico[c]["val"] for c in j["main"])
-        j["score"] -= malus
-        print(f"{j['nom']} perd {malus} points (main restante : {j['main']})")
-
-    # Scores finaux
-    print("\nScores finaux :")
-    for j in joueurs:
-        print(j["nom"], ":", j["score"])
-
-    gagnant = max(joueurs, key=lambda x: x["score"])
-    print("\n🏆 Le gagnant est :", gagnant["nom"])
-
-if __name__ == "__main__":
-    programme_principal_partie5()
+# def fin_de_partie_si_insuffisant(sac, nb_a_piocher):
+#     """Renvoie True si le sac contient moins que nb_a_piocher jetons."""
+#     return len(sac) < nb_a_piocher
 
 
 ######################## 6: Placement sur de mot ##########################
 
-# plateau = init_jetons()
+plateau = init_jetons()
 # plateau[7][7] = 'R'
 # print(plateau)
 
@@ -712,20 +447,7 @@ def tester_placement(plateau, i, j, dir, mot):
 def placer_mot(plateau, lm, mot, i, j, dir):
     """
     Cette fonction place le mot sur le plateau si possible.
-    lm : liste des lettres du joueur dans la main
-    mot : mot à placer
-    i, j : coordonnées de départ (ligne, colonne)
-    dir : direction ('H' pour horizontal, 'V' pour vertical)
     Renvoie True si le mot a été placé, False sinon.
-
-    les etapes :
-    1. demander les lettres nécessaires : tester_placement(...)
-    2. si la liste est vide → renvoyer False
-    3. vérifier que chaque lettre nécessaire est dans la main
-    4. si une lettre manque → renvoyer False
-    5. maintenant placer chaque lettre sur le plateau
-    6. retirer les lettres utilisées de la main
-    7. renvoyer True
     """
     les_lettres_a_poser = tester_placement(plateau, i, j, dir, mot)
 
@@ -824,67 +546,66 @@ def valeur_mot_dans_plateau(mot, plateau_bonus_mots, dico, i, j, dir):
 # print("Score =", score) # retourne normalement 18
 
 
-######################## Partie 7: Programme principal complet ##########################
+######################## Statistiques  ##########################
+
+def initialiser_fichier_stats():
+    """Crée le fichier stats_scrabble.txt s'il n'existe pas."""
+    if not os.path.exists("stats_scrabble.txt"):
+        with open("stats_scrabble.txt", "w", encoding="utf-8") as f:
+            f.write("=== HISTORIQUE DES PARTIES DE SCRABBLE ===\n\n")
 
 
+def sauver_stats_txt(numero_partie, joueurs):
+    """
+    Enregistre les résultats de la partie dans stats_scrabble.txt
+    avec un alignement propre.
+    """
+    with open("stats_scrabble.txt", "a", encoding="utf-8") as f:
+
+        f.write(f"=================== PARTIE {numero_partie} ===================\n")
+        f.write(f"{'Joueur':12s}{'Score':10s}{'Gagnant':10s}{'MotLong':15s}{'Scrabbles':10s}\n")
+
+        for j in joueurs:
+            gagnant_txt = "OUI" if j["gagnant"] else "NON"
+            f.write(f"{j['nom']:12s}{str(j['score']):10s}{gagnant_txt:10s}{j['mot_long']:15s}{str(j['scrabbles']):10s}\n")
+
+        f.write("\n\n")
+
+########################### Sauvegarde des parties ##########################
+
+def sauvegarder_partie(fichier, joueurs, plateau, sac, plateau_bonus, joueur_actuel):
+    """Sauvegarde la partie complète dans un fichier texte."""
+    with open(fichier, "w", encoding="utf-8") as f:
+        f.write("SAUVEGARDE_SCRABBLE\n")
+        f.write(str(joueur_actuel) + "\n")
+        f.write(str(sac) + "\n")
+        f.write(str(plateau) + "\n")
+        f.write(str(plateau_bonus) + "\n")
+        f.write(str(joueurs) + "\n")
 
 
+def charger_partie(fichier):
+    """Charge une partie sauvegardée."""
+    if not os.path.exists(fichier):
+        print("Aucune sauvegarde trouvée.")
+        return None
 
-
-
-# def main():
-#     jetons = init_jetons()
-#     bonus = init_bonus()
-#     type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
-#     if type_de_graphique.lower() == 'oui':
-#         afficher_plateau_graphique(jetons, bonus)
-#     else:
-#         afficher_jeu_textuelle(jetons, bonus)
-
-# if __name__ == "__main__":
-#     main()
-
-# def main():
-#     # --- Partie joueurs / sac ---
-#     sac = init_pioche(dict_jetons)
-    #   sac = init_pioche(dict_jetons)
-#     print("Sac initial ({} jetons) :".format(len(sac)))
-#     print(sac)
-#     print()
-
-#     # Créer deux joueurs et compléter leur main à 7 lettres
-#     joueur1 = []
-#     joueur2 = []
-#     completer_main(joueur1, sac)
-#     completer_main(joueur2, sac)
-#     print("Main du joueur 1 :", joueur1)
-#     print("Main du joueur 2 :", joueur2)
-#     print("Sac après distribution :", len(sac))
-#     print()
-
-#     # Exemple d'échange de jetons
-#     lettres_a_echanger1 = joueur1[:2]
-#     succes1 = echanger(lettres_a_echanger1, joueur1, sac)
-#     print("Échange joueur 1 :", "réussi" if succes1 else "échoué")
-#     print("Main joueur 1 après échange :", joueur1)
-#     print("Sac après échange :", len(sac))
-#     print()
-
-#     lettres_a_echanger2 = joueur2[:1]
-#     succes2 = echanger(lettres_a_echanger2, joueur2, sac)
-#     print("Échange joueur 2 :", "réussi" if succes2 else "échoué")
-#     print("Main joueur 2 après échange :", joueur2)
-#     print("Sac après échange :", len(sac))
-#     print()
-
-#     # --- Partie plateau ---
-#     jetons = init_jetons()
-#     bonus = init_bonus()
-#     type_de_graphique = input("Voulez-vous afficher le plateau avec l'interface graphique ou textuelle ? (oui/non) : ")
-#     if type_de_graphique.lower() == 'oui':
-#         afficher_plateau_graphique(jetons, bonus)
-#     else:
-#         afficher_jeu_textuelle(jetons, bonus)
-
-# if __name__ == "__main__":
-#     main()
+    with open(fichier, "r", encoding="utf-8") as f:
+        header = f.readline().strip()
+        if header != "SAUVEGARDE_SCRABBLE":
+            print("Fichier de sauvegarde invalide.")
+            return None
+        
+        joueur_actuel = int(f.readline().strip())
+        sac = eval(f.readline().strip())
+        plateau = eval(f.readline().strip())
+        plateau_bonus = eval(f.readline().strip())
+        joueurs = eval(f.readline().strip())
+    
+    return {
+        "joueur_actuel": joueur_actuel,
+        "sac": sac,
+        "plateau": plateau,
+        "plateau_bonus": plateau_bonus,
+        "joueurs": joueurs
+    }

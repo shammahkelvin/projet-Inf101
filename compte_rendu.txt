@@ -1,0 +1,12 @@
+Tour du joueur : kel
+Main : ['E', 'E', 'S', '?', 'I', 'E', 'E']
+Score : 10
+
+Actions possibles :
+(P) Passer
+(E) Échanger
+(M) Placer un mot sur le plateau
+Votre choix ? m
+Mot à placer : SEI?E
+Mot invalide, réessayez.
+Mot à placer :
